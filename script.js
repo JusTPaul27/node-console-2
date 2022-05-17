@@ -3,7 +3,9 @@ const prompt = require('prompt');
 
 const model = require('./models');
 
-const pubblicationArray = [];
+const fs = require('fs')
+
+const pubblicationArray = loadData();
 
 console.log('BENVENUTO IN BOOK MANAGER! ')
 startMenu();
@@ -59,6 +61,18 @@ function insertBook() {
             },
             price: {
                 description: "Inserisci il prezzo",
+            },
+            copies: {
+                description: "Inserisci il numero delle copie",
+            },
+            pagesNumber: {
+                description: "Inserisci il numero di pagine",
+            },
+            yop: {
+                description: "Inserisci l'anno di pubblicazione",
+            },
+            discount: {
+                description: "Inserisci lo sconto",
             }
         }
     }
@@ -66,10 +80,11 @@ function insertBook() {
 }
 
 function insertBookManager(err, result) {
-    const book = new model.Book(result.title, result.author, result.editor, result.type , result.price);
+    const book = new model.Book(result.title, result.author, result.editor, result.type,
+        parseFloat(result.price), parseInt(result.copies), parseInt(result.pagesNumber), parseInt(result.yop), parseFloat(result.discount));
 
     pubblicationArray.push(book);
-    console.log(pubblicationArray);
+    saveData(pubblicationArray);
     startMenu()
 }
 
@@ -99,7 +114,7 @@ function insertMenuManager(err, result) {
         insertMagazine();
     } else if (result.selection === '3') {
         console.log('Grazie e a presto!');
-        process.exit();
+        startMenu();
     } else {
         console.log('Selezione non disponibile');
         insertMenu()
@@ -116,7 +131,7 @@ function insertMagazine() {
             },
             editor: {
                 description: "Inserisci la casa editrice",
-            } ,
+            },
             periodicity: {
                 description: "Inserisci la periodicità",
             },
@@ -128,6 +143,12 @@ function insertMagazine() {
             },
             price: {
                 description: "Inserisci il prezzo",
+            },
+            copies: {
+                description: "Inserisci il numero di copie",
+            },
+            discount: {
+                description: "Inserisci lo sconto",
             }
         }
     }
@@ -136,13 +157,15 @@ function insertMagazine() {
 
 
 function insertMagazineManager(err, result) {
-    const magazine = new model.Magazine(result.title, result.editor,result.periodicity, result.release, result.type , result.price);
+    const magazine = new model.Magazine(result.title, result.editor, result.periodicity, result.release, result.type,
+        parseFloat(result.price), parseInt(result.copies), parseInt(result.discount));
 
     pubblicationArray.push(magazine);
-    console.log(pubblicationArray);
+    saveData(pubblicationArray);
     startMenu()
 }
 
+loadData();
 
 function printMenu(params) {
     console.log('Scegli cosa aggiungere da queste 3 opzioni');
@@ -164,8 +187,8 @@ function printMenu(params) {
 
 function printMenuManager(err, result) {
     if (result.selection === '1') {
-       printArray(pubblicationArray);
-       startMenu();
+        printArray(pubblicationArray);
+        startMenu();
     } else if (result.selection === '2') {
         printArrayByOrderTitle();
         startMenu()
@@ -192,7 +215,7 @@ function printArray(arrayToPrint) {
 
 
 function printArrayByOrderTitle() {
-    
+
     const copy = [...pubblicationArray];
     copy.sort(comparePubblicationByTitle);
     printArray(copy);
@@ -213,6 +236,38 @@ function comparePubblicationByPrice(pub1, pub2) {
     return pub2.price - pub1.price
 }
 
-/////Fare lista libri, dare la possibilità di ordinare per titolo o data
-////mettere nella opzone 1 la pubblicazione con possibilità di mettere book o mgazine
 
+function saveData(arrayToSave) {
+    const jsonArray = JSON.stringify(arrayToSave);
+    try {
+        fs.writeFileSync('./data-file.json', jsonArray);
+    } catch (error) {
+        console.error('Impossibile salvare il file ')
+    }
+
+}
+
+
+function loadData() {
+    let jsonArray
+
+    try {
+        jsonArray = fs.readFileSync('./data-file.json', 'utf8');
+    } catch (error) {
+        jsonArray = '[]'
+    }
+    jsonArray = jsonArray.trim();
+    const array = [];
+    if (jsonArray) {
+        array = JSON.parse(jsonArray);
+    }
+   
+    const pubArray = [];
+
+    for (const obj of array) {
+        const pubblication = model.pubblicationFactory(obj);
+        pubArray.push(pubblication)
+    }
+    return pubArray;
+
+}

@@ -1,0 +1,26 @@
+[
+    {
+        "title": "Topolino",
+        "editor": "Panini",
+        "type": "fumetto",
+        "price": 6,
+        "copies": 180,
+        "discount": 2,
+        "tax": 10,
+        "author": "Walt Disney",
+        "pagesNumber": 55,
+        "yop": 2014
+    },
+    {
+        "title": "Iliade",
+        "editor": "",
+        "type": "Epica",
+        "price": 14,
+        "copies": 50,
+        "discount": 2,
+        "tax": 10,
+        "author": "Omero",
+        "pagesNumber": 1800,
+        "yop": 2011
+    }
+]
