@@ -62,7 +62,7 @@ class Book extends Pubblication{
 
 class Magazine extends Pubblication{
 
-    constructor(title, editor, periodicity, release, type, price, copies, discount, releaseDate){
+    constructor(title, editor, periodicity = 'non disponibile', release, type = 'non classificato', price = -1, copies = 0, discount = 0, releaseDate = new Date()){
         super(title, editor, type, price, copies, discount, 20);
         this.periodicity = periodicity;
         this.release = release;
